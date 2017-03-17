@@ -97,7 +97,8 @@ def step3( f2 ):
 	# Check if recovered OAEP message is correct
 	c_vrfy = pow( m_min, e, N )
 	if c_vrfy == c:
-		print '\n***\nEME-encoded message recovered successfully!\n***\n'
+		print '\n***\nEME-encoded message recovered successfully!'
+		print 'message: ', ( "%X" % m_min ), '\n***\n'
 
 	return ( "%X" % m_min ).zfill(256)
 
@@ -193,9 +194,9 @@ if ( __name__ == "__main__" ) :
 	em = step3( f2 )
 	m = EME_decode( em )
 
-	c_test = pow(long(m,16), e, N)
-	print 'C test: ', c_test
-	print 'Actual C: ', c
+	# c_test = pow(long(m,16), e, N)
+	# print 'C test: ', c_test
+	# print 'Actual C: ', c
 
 	print 'Message recovered: ', m, '\n'
 

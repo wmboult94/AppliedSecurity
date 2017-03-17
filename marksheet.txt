@@ -16,19 +16,21 @@
 So that we can calibrate and improve the assignment in the future, give us
 a rough idea how long (in hours) you spent on it *in total*:
 
-effort : [...] hours
+effort : ~40 hours for Stages 1 and 2
 
 -------------------------------------------------------------------------------
 
 3. Citation
 
 Clearly it might have an influence on your mark, but the use of third-party
-resources *is* allowed *if* correctly cited (unless explicitly prohibited 
-by the assignment description of course).  Let us know what third-party 
-source code or resources you used (if any) so it's clear what's your work 
+resources *is* allowed *if* correctly cited (unless explicitly prohibited
+by the assignment description of course).  Let us know what third-party
+source code or resources you used (if any) so it's clear what's your work
 and what isn't:
 
-[...]
+http://archiv.infsec.ethz.ch/education/fs08/secsem/Manger01.pdf
+http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=EBEC6F525073182E2F72546071950C88?doi=10.1.1.12.3070&rep=rep1&type=pdf
+https://tools.ietf.org/html/rfc3447
 
 -------------------------------------------------------------------------------
 
@@ -38,22 +40,23 @@ The following gives a stage-by-stage description of the assignment marking
 scheme.  Note this acts as an indicative guideline only, including weights
 for each more obvious aspect (e.g., functional correctness); other aspects
 outside this list can warrant an increase/decrease in marks, with examples
-including hard to quantify features such as the efficiency, robustness, 
+including hard to quantify features such as the efficiency, robustness,
 generality, realism, or style of a solution.
 
-[?] Stage 1 : an attack based on error messages
+* Stage 1 : an attack based on error messages
               - correct target material                              ( 40%)
               - solution quality wrt. efficiency, robustness etc.    ( 30%)
               - analysis questions                                   ( 30%)
 
-              target material : [...]
+              target material : 1AD2DD65067438EEE457A3CE7DF7BE54E2CEA70B1838EAF845E389A42E018E24AC1554F4316E5AE8CF9767791129E176BA7323C7504841E4362D33E0D686F33F9EF2DF551D9199834286CA8C78AE3DF157D9B4F00D
 
-[?] Stage 2 : an attack based on execution time
+* Stage 2 : an attack based on execution time
               - correct target material                              ( 40%)
               - solution quality wrt. efficiency, robustness etc.    ( 30%)
               - analysis questions                                   ( 30%)
 
-              target material : [...]
+              target material : Binary form of key: 1110001001100101100100011011101000101011010110011001101101010000
+							Hex form of key: E26591BA2B599B50
 
 [?] Stage 3 : an attack based on an injected fault
               - correct target material                              ( 40%)
@@ -80,6 +83,15 @@ Any other documentation, notes or comments that you think are important or
 might be easy to overlook (e.g., a subtle issue or technique in associated
 source code) should go here:
 
-[...]
+Stage 1:
+I think I have completed this successfully, however I ran out of time to write the functionality to test whether the final decoded message is correct. The code successfully obtains the EM-encoded message at the end of step 3 of the Manger attack.
+
+There was one problem I had with the exam questions though; in Q1, where we have to explain the attack using the given parameters, I simply cannot obtain the message corresponding to ciphertext 888 (plaintext 123) - I obtain a plaintext message of 90! I stepped through the algorithm carefully and can't see where my calculations are going wrong. Nonetheless hopefully my explanation of the algorithm will be sufficient in showing my understanding.
+
+Stage 2:
+I have almost completely implemented this attack, and I believe that the actual timing attack stuff is correct. However, I ran out of time to correctly verify my key material, so I have given both the binary and hex formats of the key above (I'm sure it's nearly correct in binary form as I obtain almost the exact same value each time); I also didn't have quite enough time to correctly incorporate error-checking along the way, which means that my attack will take longer than the 5 minute limit as it needs to use many more samples to recover the key.
+I attempted to add error checking functionality which performs the current calculation again if the diff1 and diff2 values are too close, however this doesn't work since it just keeps the timing info for one of the values; the way to perform this error-checking correctly would be to take note of all the current values when diff1 and diff2 are similar, perform a few more steps of the algorithm, checking to see what the diff1 and diff2 values are, and if they continue to be too near, return to the first erroneous step and choose the alternate bit.
+
+I had trouble on this attack even managing to get a decent clock time for a low number of samples, until I moved some of the calculations of the Montgomery exponentiation outside of the main attack loop, which reduced the time of each iteration significantly.
 
 -------------------------------------------------------------------------------

@@ -13,7 +13,7 @@ import time
 count = 1
 
 # Total num attacks
-numAttacks = 10000
+numAttacks = 20000
 
 wordSize = 64
 numWords = 16
@@ -254,7 +254,7 @@ if ( __name__ == "__main__" ) :
 	# print 'rho', rhoSq
 	# print 'omega', omega
 
-	# # Generate random ciphertexts
+	# Generate random ciphertexts
 	ciphertexts = genCiphertexts()
 
 	key = attack( ciphertexts )
@@ -286,7 +286,7 @@ if ( __name__ == "__main__" ) :
 	#
 	# print montExp(x,y)
 
-	# key = '1110001001100101100100011011101000101011010110011001101101010010'
+	# key = '1110001001100101100100011011101000101011010110011001101101010001'
 	# test_decrypt =  pow( test_ctxt, int( key, 2 ), N )
 	# print test_message_out
 	# print test_decrypt
@@ -312,6 +312,8 @@ if ( __name__ == "__main__" ) :
 			print "%X" % long(key, 2)
 			ciphertexts = genCiphertexts()
 			key = attack( ciphertexts )
+			print 'Num interations: ', count
+
 
 	print "Key is %X" % long(key, 2)
 	print 'Num interations: ', count

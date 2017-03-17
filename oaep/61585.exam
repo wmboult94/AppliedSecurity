@@ -1,13 +1,68 @@
 Q.1 Consider the parameters N = 3551, e = 5, d = 1373, and c = 888, all
     represented in decimal.  Use them to explain, in your own words, the
     principle of this attack (e.g., how and why it works).
+
+For this attack, a B value is calculated, effectively the highest value the message can take. B will be equal to 2^(8*(k-1)) here, where k is equal to the byte length of the modulus N; i.e. B = 256.
+
+We can send the oracle multiples of the ciphertext due to RSA’s homomorphism, so we send some multiple f^e * c (mod N) to the oracle, which corresponds to f * m. The oracle tells us whether this value is less than or greater to B.
+
+Since the attack target’s error codes effectively tell us whether the query is >= B or < B, thus splitting our possible message space in two, we can repeatedly send multiples of the ciphertext until we are left with one value.
+
+Using the example parameters:
+
+set f1 = 2
+send f1^e * c (mod N) = 8 to the oracle. Oracle responds < B.
+Set f1 = 4
+send f1^e * c (mod N) = 256 to the oracle. Oracle responds >= B. So we move to step 2
+
+set f2 = floor(N + B / B) * f1/2 = 14 * 2 = 28
+send f2^e * c (mod N) = 2331 to the oracle. Oracle responds >= B.
+Set f2 = f2 + f1/2 = 30
+send f2^e * c (mod N) = 2790 to oracle. Oracle responds >= B.
+Set f2 = f2 + f1/2 = 32
+...
+Set f2 = f2 + f1/2 = 42
+send f2^e * c (mod N) = 57 to oracle. Oracle responds >= B. So we move to step 3.
+
+set m_min = ceil(N/f2) = 85, m_max = floor((N+B)/f2) = 90
+Set f_tmp = floor(2B/m_max-m_min) = 102
+Set i = floor((f_tmp*m_min)/N) = 2
+Set f3 = ceil(iN/m_min) = 84
+send f3^e * c (mod N) = 1824. Oracle responds >= B.
+Set m_min = ceil((iN + B)/f3) = 88
+Set f_tmp = floor(2B/m_max-m_min) = 256
+Set i = floor((f_tmp*m_min)/N) = 6
+Set f3 = ceil(iN/m_min) = 243
+send f3^e * c (mod N) = 1665. Oracle responds >= B.
+Set m_min = ceil((iN + B)/f3) = 89
+Set f_tmp = floor(2B/m_max-m_min) = 512
+Set i = floor((f_tmp*m_min)/N) = 12
+Set f3 = ceil(iN/m_min) = 479
+send f3^e * c (mod N) = 2287. Oracle responds >= B.
+Set m_min = ceil((iN + B)/f3) = 90
+
+m_min == m_max so we stop. Recovered
+
+
+
+
 Q.2 To prevent the attack, the vendor suggests altering the software: the
     idea is that no matter what error occurs, the same error code will be
     produced.  Explain whether (and why, or why not) this change alone is
     sufficient.
+
+This change will not be sufficient in preventing the attack, since there are other methods for revealing which error occurred without them being explicitly given. For example, a timing attack could work in revealing if there was a failure in the integer-to-octets conversion by detecting the time difference versus the error for failing the integrity check.
+
+Aside from this, the vendor also has to consider that logged output may reveal information, or there may be other error conditions which can be used to attack. Simply giving the same error code is a rather fragile way of attempting to prevent the attack.
+
 Q.7 Side-channel attacks are often categorised as being either simple or
     differential: how would categorise this attack, and why?
+
+This would be a simple side-channel attack. Multiple calculations are not required by a simulating device to perform some statistical analysis with, it simply obtains values from the oracle to iteratively move closer to the answer.
+
 Q.8 Imagine you are a security consultant, employed by the device vendor.
     The vendor has heard that exponent and message blinding can be used to
     prevent some side-channel attacks on RSA.  Explain whether these
     techniques would prevent this attack, and why.
+
+Blinding involves choosing random values and creating a mask before performing the RSA exponentiation, and then re-obtaining the correct value afterwards. This technique would not be useful in preventing this attack, since this attack doesn’t need to simulate the target in any way, and only makes use of the public key. In summary, the blinding does not make the RSA non-homomorphic, which is what the Manger attack exploits.
