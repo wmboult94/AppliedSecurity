@@ -1,0 +1,44 @@
+appliedsec questions
+
+Time attack:
+
+Q.1 The vendor of the attack target is concerned that news of this attack
+    could scare off potential customers; they will make any alteration
+    necessary (in software or hardware) to prevent the attack.  Explain the
+    options they have, and which one you would recommend.
+
+The first option the vendor has, and the most simple, is to alter the algorithm such that the additional subtraction always takes place, thus defeating the attacker's ability to distinguish between whether or not a reduction has occurred. This barely affects the algorithm’s performance, however the vendor must take care to ensure the time differences have been removed. This approach is good, due to its simplicity, but it does not prevent other time-based attacks which don’t exploit the reduction.
+
+The second option is to use a blinding technique: we choose a random pair, v_i, v_f, where v_f^-1 == v_i^e (e is the public key exponent), and then multiply the attack message by v_i (mod N) before inputting it to the modular exponentiation, and then multiply the output by v_f (mod N). This means that the attacker can no longer simulate the computations of the target, and thus can not perform a differential analysis.
+
+Another option could be to use a different method of computing the RSA algorithm, e.g using Chinese Remainder Theorem, although there will be different attacks associated with these other methods.
+
+I would recommend the blinding option, as this offers the most effective defence against the attack, there is no need to add redundant calculations which could still be overcome
+
+Q.2 The vendor of the attack target is concerned that a similar attack may
+    also apply to their implementation of ElGamal encryption.  Explain the
+    potential for such an attack, and how it differs wrt.  the case of RSA.
+
+The ElGamal cryptosystem is similar to RSA in that they both perform a modular exponentiation, which is what this timing attack exploits; thus if the vendor’s implementation of ElGamal encyption also uses Montgomery multiplication, there seems to be potential for this attack working.
+
+However, within the encryption stage a random y is chosen as the exponent for the public value h, and thus the modular exponentiation performed in the encryption stage does not reveal information information about the secret key; furthermore this y value will be different each time and so is not useful for the attacker.
+
+Q.4 Numerous factors might produce noise within measurements of execution
+    time: based on the given attack target and context, outline at least
+    two examples.
+
+Since the attack target is a server, noise can arise from the latency of the network the attacker is latching onto. If the differences in execution time of the reduction/non-reduction are small relative to the latency, it will be difficult to distinguish them.
+
+Furthermore, noise can arise from the error-correction techniques in place to ensure quality transmission, which may obfuscate timing measurements.
+
+Q.6 Let n denote the number of simulated clock cycles required to execute a
+    Montgomery multiplication on the attack target.  Estimate the value of
+    n (as accurately as you can) and explain how you did so.
+
+The CIOS method of Montgomery multiplication uses 2s^2 + 2 multiplications, and 4s^2 + 4s + 2 additions. For an Intel Core2 Duo architecture, taking Skylake for example, a multiplication takes 3 clock cycles, and a an addition takes 1 clock cycle. Hence, for our 1024-bit values:
+
+cycles = 3*(2s^2 + 2) + 1*(4s^2 + 4s + 2) = 10s^2 + 4s + 8 = 10(16)^2 + 4(16) + 8 = 2632 cycles
+
+Refs:
+http://algnt.satyukov.ru/books/j37acmon.pdf
+Appendix C, http://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-optimization-manual.pdf
